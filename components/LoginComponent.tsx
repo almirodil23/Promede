@@ -20,6 +20,7 @@ import LogoBreakAnimation from '@/components/LogoBreakAnimation';
 import { useAuth } from '@/context/auth';
 
 const screenWidth = Dimensions.get('window').width;
+const width = Dimensions.get('screen').width
 const screenHeight = Dimensions.get('window').height;
 const logoSize = 200;
 
@@ -87,7 +88,8 @@ export default function LoginComponent() {
 
 const handleBreakFinish = useCallback(() => {
   // Usar setTimeout para esperar exactamente el tiempo total de la animación
-    setAnimationFinished(true);
+  setAnimationFinished(true);
+  console.timeEnd('aqui');
 // duración total que dura la animación de LogoBreakAnimation
 }, [setAnimationFinished]);
 
@@ -129,6 +131,7 @@ const handleBreakFinish = useCallback(() => {
       await login(email, password);
       // Antes de iniciar animación, ponemos animationFinished a false para que el layout espere
       setAnimationFinished(false);
+      console.time('aqui')
       startMoveToCenter();
          
     } catch (error) {
@@ -139,9 +142,9 @@ const handleBreakFinish = useCallback(() => {
   if (breaking) {
     return (
       <View style={styles.general}>
-        <View style={styles.innerContainer}>
+        <View style={styles.contenedorexterno}>
                   <View
-          style={styles.logoContainer}
+          style={styles.logocontenedor}
           ref={logoRef}
           onLayout={() => {
             logoRef.current?.measure((x, y, width, height, pageX, pageY) => {
@@ -161,9 +164,10 @@ const handleBreakFinish = useCallback(() => {
 
   return (
     <View style={styles.general}>
-      <View style={styles.innerContainer}>
+      <View style={styles.contenedorexterno}>
+        {width >600 && (
         <View
-          style={styles.logoContainer}
+          style={styles.logocontenedor}
           ref={logoRef}
           onLayout={() => {
             logoRef.current?.measure((x, y, width, height, pageX, pageY) => {
@@ -177,8 +181,8 @@ const handleBreakFinish = useCallback(() => {
             resizeMode="contain"
           />
         </View>
-
-        <Animated.View style={[styles.formContainer, styles.shadowBox, animatedFormStyle]}>
+         )}
+        <Animated.View style={[styles.formContainer, styles.shadowBox, animatedFormStyle,{width: width > 600 ? '50%' : '80vw'}]}>
           <Text style={styles.title}>Promede Gestor</Text>
           <View style={styles.form}>
             <TextInput
@@ -219,7 +223,7 @@ const handleBreakFinish = useCallback(() => {
 const styles = StyleSheet.create({
   general: {
     flex: 1,
-    backgroundColor: '#7e9adbff',
+    backgroundColor: 'rgba(0,0,0,0)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -232,9 +236,9 @@ const styles = StyleSheet.create({
   loadingIndicator: {
     marginTop: 20,
   },
-  innerContainer: {
-    width: '90%',
-    height: '90%',
+  contenedorexterno: {
+    width: '90vw',
+    height: '90vh',
     backgroundColor: '#fff',
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -242,7 +246,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     padding: 20,
   },
-  logoContainer: {
+  logocontenedor: {
     width: logoSize,
     height: logoSize,
     justifyContent: 'center',
@@ -256,7 +260,7 @@ const styles = StyleSheet.create({
     zIndex: 100
   },
   formContainer: {
-    width: '50%',
+    width: '80vw',
     height: '80%',
     alignItems: 'center',
     justifyContent: 'space-evenly',

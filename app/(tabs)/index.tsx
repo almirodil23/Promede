@@ -12,87 +12,276 @@ import {
   StyleSheet,
   Pressable,
   FlatList,
-  Image
+  Image,
+  Dimensions,
+  Easing,
+  Modal
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+
+import DropDownPicker from 'react-native-dropdown-picker';
 import { Calendar } from 'react-native-calendars';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
+import { eachDayOfInterval, format } from 'date-fns';
+import { LinearGradient } from 'expo-linear-gradient';
+import MaskedView from '@react-native-masked-view/masked-view';
+import { expedientes } from '@/constants/Expedientes';
+import Trauma from '@/assets/logos/Trauma';
+import Rehabilitacion from '@/assets/logos/Rehabilitacion';
+import Neurologia from '@/assets/logos/Neurologia';
+import Neurofisiologia from '@/assets/logos/Neurofisioligia';
+import Neurocirugia from '@/assets/logos/Neurocirugia';
+import Psicologia from '@/assets/logos/Psicologia';
+import Oftalmologia from '@/assets/logos/Oftalmologia';
+import Ginecologia from '@/assets/logos/Ginecologia';
+import MedLegal from '@/assets/logos/MedLegal';
+import MedTrabajo from '@/assets/logos/MedTrabajo';
+import Odontologia from '@/assets/logos/Odontologia';
+import MaxiloFacial from '@/assets/logos/MaxiloFacial';
+import EspecialidadIcon from '@/components/ui/EspecialidadIcon';
+import ORL from '@/assets/logos/ORL';
+import EstadoText from '@/components/ui/Estado';
+import EditModal from '@/components/EditModal';
+import { RFValue } from "react-native-responsive-fontsize";
+import { Picker } from '@react-native-picker/picker';
 
 
 
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const expedientes = [
-  { id: '1', title: 'Expediente 1', description: 'Descripción del expediente 1', fechaLimite: '2025-07-03' },
-  { id: '2', title: 'Expediente 2', description: 'Descripción del expediente 2', fechaLimite: '2025-07-05' },
-  { id: '3', title: 'Expediente 3', description: 'Descripción del expediente 3', fechaLimite: '2025-07-10' },
-  { id: '4', title: 'Expediente 4', description: 'Descripción del expediente 4', fechaLimite: '2025-07-10' },
-  { id: '5', title: 'Expediente 5', description: 'Descripción del expediente 5', fechaLimite: '2025-07-15' },
-  { id: '6', title: 'Expediente 6', description: 'Descripción del expediente 6', fechaLimite: '2025-07-08' },
-  { id: '7', title: 'Expediente 7', description: 'Descripción del expediente 7', fechaLimite: '2025-07-01' },
-  { id: '8', title: 'Expediente 8', description: 'Descripción del expediente 8', fechaLimite: '2025-07-17' },
-  { id: '9', title: 'Expediente 9', description: 'Descripción del expediente 9', fechaLimite: '2025-07-02' },
-  { id: '10', title: 'Expediente 10', description: 'Descripción del expediente 10', fechaLimite: '2025-07-03' },
-  { id: '11', title: 'Expediente 11', description: 'Descripción del expediente 11', fechaLimite: '2025-07-04' },
-  { id: '12', title: 'Expediente 12', description: 'Descripción del expediente 12', fechaLimite: '2025-07-06' },
-  { id: '13', title: 'Expediente 13', description: 'Descripción del expediente 13', fechaLimite: '2025-07-09' },
-  { id: '14', title: 'Expediente 14', description: 'Descripción del expediente 14', fechaLimite: '2025-07-09' },
-  { id: '15', title: 'Expediente 15', description: 'Descripción del expediente 15', fechaLimite: '2025-07-07' },
-  { id: '16', title: 'Expediente 16', description: 'Descripción del expediente 16', fechaLimite: '2025-07-08' },
-  { id: '17', title: 'Expediente 17', description: 'Descripción del expediente 17', fechaLimite: '2025-07-11' },
-  { id: '18', title: 'Expediente 18', description: 'Descripción del expediente 18', fechaLimite: '2025-07-12' },
-  { id: '19', title: 'Expediente 19', description: 'Descripción del expediente 19', fechaLimite: '2025-07-13' },
-  { id: '20', title: 'Expediente 20', description: 'Descripción del expediente 20', fechaLimite: '2025-07-13' },
-  { id: '21', title: 'Expediente 21', description: 'Descripción del expediente 21', fechaLimite: '2025-07-15' },
-  { id: '22', title: 'Expediente 22', description: 'Descripción del expediente 22', fechaLimite: '2025-07-16' },
-  { id: '23', title: 'Expediente 23', description: 'Descripción del expediente 23', fechaLimite: '2025-07-18' },
-  { id: '24', title: 'Expediente 24', description: 'Descripción del expediente 24', fechaLimite: '2025-07-19' },
-  { id: '25', title: 'Expediente 25', description: 'Descripción del expediente 25', fechaLimite: '2025-07-20' },
-  { id: '26', title: 'Expediente 26', description: 'Descripción del expediente 26', fechaLimite: '2025-07-21' },
-  { id: '27', title: 'Expediente 27', description: 'Descripción del expediente 27', fechaLimite: '2025-07-22' },
-  { id: '28', title: 'Expediente 28', description: 'Descripción del expediente 28', fechaLimite: '2025-07-23' },
-  { id: '29', title: 'Expediente 29', description: 'Descripción del expediente 29', fechaLimite: '2025-07-24' },
-  { id: '30', title: 'Expediente 30', description: 'Descripción del expediente 30', fechaLimite: '2025-07-25' },
-  { id: '31', title: 'Expediente 31', description: 'Descripción del expediente 31', fechaLimite: '2025-07-26' },
-  { id: '32', title: 'Expediente 32', description: 'Descripción del expediente 32', fechaLimite: '2025-07-27' },
-  { id: '33', title: 'Expediente 33', description: 'Descripción del expediente 33', fechaLimite: '2025-07-28' },
-  { id: '34', title: 'Expediente 34', description: 'Descripción del expediente 34', fechaLimite: '2025-07-29' },
-  { id: '35', title: 'Expediente 35', description: 'Descripción del expediente 35', fechaLimite: '2025-07-30' },
-  { id: '36', title: 'Expediente 36', description: 'Descripción del expediente 36', fechaLimite: '2025-07-31' },
-  { id: '37', title: 'Expediente 37', description: 'Descripción del expediente 37', fechaLimite: '2025-07-03' },
-  { id: '38', title: 'Expediente 38', description: 'Descripción del expediente 38', fechaLimite: '2025-07-05' },
-  { id: '39', title: 'Expediente 39', description: 'Descripción del expediente 39', fechaLimite: '2025-07-07' },
-  { id: '40', title: 'Expediente 40', description: 'Descripción del expediente 40', fechaLimite: '2025-07-12' },
-  { id: '41', title: 'Expediente 41', description: 'Descripción del expediente 41', fechaLimite: '2025-07-14' },
-  { id: '42', title: 'Expediente 42', description: 'Descripción del expediente 42', fechaLimite: '2025-07-16' },
-  { id: '43', title: 'Expediente 43', description: 'Descripción del expediente 43', fechaLimite: '2025-07-18' },
-  { id: '44', title: 'Expediente 44', description: 'Descripción del expediente 44', fechaLimite: '2025-07-20' },
-  { id: '45', title: 'Expediente 45', description: 'Descripción del expediente 45', fechaLimite: '2025-07-22' },
-  { id: '46', title: 'Expediente 46', description: 'Descripción del expediente 46', fechaLimite: '2025-07-24' },
-  { id: '47', title: 'Expediente 47', description: 'Descripción del expediente 47', fechaLimite: '2025-07-26' },
-  { id: '48', title: 'Expediente 48', description: 'Descripción del expediente 48', fechaLimite: '2025-07-28' },
-  { id: '49', title: 'Expediente 49', description: 'Descripción del expediente 49', fechaLimite: '2025-07-30' },
-  { id: '50', title: 'Expediente 50', description: 'Descripción del expediente 50', fechaLimite: '2025-07-31' }
-];
-
-
+const CARD_MARGIN = 10;
+const NUM_COLUMNS = SCREEN_WIDTH < 400 ? 2 : 4;
+const CARD_WIDTH = (SCREEN_WIDTH - CARD_MARGIN * (NUM_COLUMNS * 2)) / NUM_COLUMNS;
 
 
 
 export default function HomeScreen() {
+  const { width } = Dimensions.get('window');
 
   const [activeScreen, setActiveScreen] = useState('main');
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const [searchText, setSearchText] = useState('');
   const [noteText, setNoteText] = useState('');
   const [formData, setFormData] = useState({ nombre: '', descripcion: '' });
-  const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
   const [focusedExpediente, setFocusedExpediente] = useState(null);
   const [expedientesNotas, setExpedientesNotas] = useState({});
-  const scaleAnim = useRef(new Animated.Value(0)).current;
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const [selectedItem, setSelectedItem] = React.useState(null);
+  const [data, setData] = React.useState(expedientes);
+  const NUM_COLUMNS = width < 800 ? 2 : 4; 
+  const [openEspecialidad, setOpenEspecialidad] = useState(false);
+  const [especialidad, setEspecialidad] = useState(null);
+  const [estado, setEstado] = useState(null);
+  const [open, setOpen] = useState(false);
 
+
+
+
+  const estadosArray = [
+  { label: 'Asignar', value: 'Asignar', render: () => <EstadoText estado="Asignar" long /> },
+  { label: 'Reclamar', value: 'Reclamar', render: () => <EstadoText estado="Reclamar" long /> },
+  { label: 'Corregir', value: 'Corregir', render: () => <EstadoText estado="Corregir" long /> },
+  { label: 'Letrados', value: 'Letrados', render: () => <EstadoText estado="Letrados" long /> },
+  { label: 'Aseguradora', value: 'Aseguradora', render: () => <EstadoText estado="Aseguradora" long /> },
+  { label: 'Documentacion', value: 'Documentacion', render: () => <EstadoText estado="Documentacion" long /> },
+  { label: 'Otros', value: 'Otros', render: () => <EstadoText estado="Otros" long /> },
+];
+
+  const [estados, setEstados] = useState(estadosArray);
+
+const [especialidades, setEspecialidades] = useState([
+  {
+    label: "Trauma",
+    value: "trauma",
+    icon: () => <EspecialidadIcon IconComponent={Trauma} nombre="Trauma" />
+  },
+  {
+    label: "Rehabilitación",
+    value: "rehabilitacion",
+    icon: () => <EspecialidadIcon IconComponent={Rehabilitacion} nombre="Rehabilitación" />
+  },
+  {
+    label: "Neurología",
+    value: "neurologia",
+    icon: () => <EspecialidadIcon IconComponent={Neurologia} nombre="Neurología" />
+  },
+  {
+    label: "Neurofisiología",
+    value: "neurofisiologia",
+    icon: () => <EspecialidadIcon IconComponent={Neurofisiologia} nombre="Neurofisiología" />
+  },
+  {
+    label: "Neurocirugía",
+    value: "neurocirugia",
+    icon: () => <EspecialidadIcon IconComponent={Neurocirugia} nombre="Neurocirugía" />
+  },
+  {
+    label: "Psiquiatría",
+    value: "psiquiatria",
+    icon: () => <EspecialidadIcon IconComponent={Psicologia} nombre="Psiquiatría" />
+  },
+  {
+    label: "Otorrinolaringología",
+    value: "orl",
+    icon: () => <EspecialidadIcon IconComponent={ORL} nombre="Otorrinolaringología" />
+  },
+  {
+    label: "Oftalmología",
+    value: "oftalmologia",
+    icon: () => <EspecialidadIcon IconComponent={Oftalmologia} nombre="Oftalmología" />
+  },
+  {
+    label: "Ginecología",
+    value: "ginecologia",
+    icon: () => <EspecialidadIcon IconComponent={Ginecologia} nombre="Ginecología" />
+  },
+  {
+    label: "Medicina Legal",
+    value: "medlegal",
+    icon: () => <EspecialidadIcon IconComponent={MedLegal} nombre="Medicina Legal" />
+  },
+  {
+    label: "Medicina del Trabajo",
+    value: "medtrabajo",
+    icon: () => <EspecialidadIcon IconComponent={MedTrabajo} nombre="Medicina del Trabajo" />
+  },
+  {
+    label: "Odontología",
+    value: "odontologia",
+    icon: () => <EspecialidadIcon IconComponent={Odontologia} nombre="Odontología" />
+  },
+  {
+    label: "Maxilofacial",
+    value: "maxilofacial",
+    icon: () => <EspecialidadIcon IconComponent={MaxiloFacial} nombre="Maxilofacial" />
+  },
+]);
+
+
+  
+  //const [data, setData] = React.useState(filteredExpedientes); // tu lista original
+
+
+    const handleSave = (updatedItem) => {
+    //
+    setData((prevData) =>
+      prevData.map((item) => (item.id === updatedItem.id ? updatedItem : item))
+    );
+    setModalVisible(false);
+  };
+
+  
+  
+  const filteredBySearch = expedientes.filter(exp =>
+  exp.title.toLowerCase().includes(searchText.toLowerCase())
+);
+
+  const today = new Date();
+  const nextMonth = new Date();
+  nextMonth.setMonth(today.getMonth() + 1);
+  const acc = expedientes.reduce((acc, expediente) => {
+  const fecha = expediente?.fechaLimite;
+    const relevancia = expediente?.relevancia;
+    function calcHeatmapColor(value, min, max) {
+  if(max === min) return '#00ff00';
+  // 0: verde (120deg), 60: amarillo, 120: rojo (0deg)
+  const hue = 120 - 120 * ((value - min) / (max - min));
+  return `hsl(${hue}, 100%, 45%)`;
+}
+
+
+const getMarkedDates = (expedientes) => {
+  // Agrupa relevancias por fecha
+  const relevanciaPorFecha = {};
+  let min = Infinity, max = -Infinity;
+
+  expedientes.forEach(exp => {
+    const fecha = exp.fechaLimite;
+    if (!relevanciaPorFecha[fecha]) relevanciaPorFecha[fecha] = 0;
+    relevanciaPorFecha[fecha] += exp.relevancia;
+
+    min = Math.min(min, relevanciaPorFecha[fecha]);
+    max = Math.max(max, relevanciaPorFecha[fecha]);
+  });
+
+  // Interpola color
+  const interpolateColor = (value) => {
+    if (max === min) return '#00ff00';
+    const ratio = (value - min) / (max - min);
+    const red = Math.round(255 * ratio);
+    const green = Math.round(255 * (1 - ratio));
+    return `#${red.toString(16).padStart(2, '0')}${green.toString(16).padStart(2, '0')}00`;
+  };
+
+  // Construye markedDates
+  const markedDates = {};
+  Object.keys(relevanciaPorFecha).forEach(fecha => {
+    markedDates[fecha] = {
+      marked: true,
+      dotColor: interpolateColor(relevanciaPorFecha[fecha])
+    };
+  });
+
+  return markedDates;
+};
+
+
+    
+  const getRelevanceByDate = () => {
+  const result = {};
+  let minRelevance = Infinity, maxRelevance = -Infinity;
+
+  expedientes.forEach(exp => {
+    const fecha = exp.fechaLimite;
+    result[fecha] = (result[fecha] || 0) + exp.relevancia;
+    if (result[fecha] < minRelevance) minRelevance = result[fecha];
+    if (result[fecha] > maxRelevance) maxRelevance = result[fecha];
+  });
+
+  return { result, minRelevance, maxRelevance };
+};
+
+
+    
+
+  if (!fecha || typeof relevancia !== 'number') return acc;
+
+  if (!acc[fecha]) {
+    acc[fecha] = { date: fecha, count: 0 };
+  }
+
+  acc[fecha].count += relevancia;
+  return acc;
+}, {} as Record<string, { date: string; count: number }>);
+
+
+  const startDate = new Date();
+  startDate.setDate(today.getDate() - 120); // numDays = 120
+
+const daysInRange = eachDayOfInterval({ start: startDate, end: today });
+
+const values = daysInRange.map((day) => {
+  const dateStr = format(day, 'yyyy-MM-dd');
+  const match = acc[dateStr];
+  return {
+    date: dateStr,
+    count: (match && typeof match.count === 'number') ? match.count : 0,
+  };
+});
+  
+  
+  
+
+
+
+
+const scaleAnim = useRef(new Animated.Value(0)).current;
+const heatmapValues = expedientes.map(exp => ({
+  date: exp.fechaLimite,
+  count: exp.relevancia, // 1-5
+}));
 
 // Cargar la fuente solo una vez
  const [fontsLoaded] = useFonts({
@@ -100,15 +289,17 @@ export default function HomeScreen() {
   });
 
 
-// Animar al cambiar activeScreen
-useEffect(() => {
+
+
+  useEffect(() => {
+  setSelectedDate(today.toISOString().split('T')[0]); // Seleccionar hoy por defecto
   fadeAnim.setValue(0);
-  scaleAnim.setValue(0);
+  scaleAnim.setValue(0.02);
 
   Animated.parallel([
     Animated.timing(fadeAnim, {
       toValue: 1,
-      duration: 3000,
+      duration: 1200,
       useNativeDriver: true,
     }),
     Animated.spring(scaleAnim, {
@@ -119,21 +310,40 @@ useEffect(() => {
     }),
   ]).start();
 }, [activeScreen]);
-
+const selectedExp = expedientes.filter( (exp) => exp.fechaLimite === selectedDate );
 
   
 const getMarkedDates = (expedientes) => {
-  const marked = {};
-  expedientes.forEach((exp) => {
-    if (!marked[exp.fechaLimite]) {
-      marked[exp.fechaLimite] = {
-        marked: true,
-        dotColor: 'red',
-      };
-    }
+  // Agrupa relevancias por fecha
+  const relevanciaPorFecha = {};
+  let min = Infinity, max = -Infinity;
+  expedientes.forEach(exp => {
+    const fecha = exp.fechaLimite;
+    relevanciaPorFecha[fecha] = (relevanciaPorFecha[fecha] || 0) + exp.relevancia;
+    min = Math.min(min, relevanciaPorFecha[fecha]);
+    max = Math.max(max, relevanciaPorFecha[fecha]);
   });
-  return marked;
+  // Crea gradiente verde→rojo
+  const interpolateColor = value => {
+    if (max === min) return '#00ff00'; // todos verdes si hay un solo valor
+    const ratio = (value - min) / (max - min);
+    const red = Math.round(255 * ratio);
+    const green = Math.round(255 * (1 - ratio));
+    return `#${red.toString(16).padStart(2, '0')}${green.toString(16).padStart(2, '0')}00`;
+  };
+  // Arma el objeto del calendario
+  const markedDates = {};
+  Object.keys(relevanciaPorFecha).forEach(fecha => {
+    markedDates[fecha] = {
+      marked: true,
+      dotColor: interpolateColor(relevanciaPorFecha[fecha]),
+    };
+  });
+  return markedDates;
 };
+
+  
+
 
 
   
@@ -153,11 +363,22 @@ const calcularDiasRestantes = (fechaLimite: string | Date): number => {
 
 
 
-  const filteredExpedientes = expedientes.filter(
-    (exp) => exp.fechaLimite === selectedDate
-  );
 
-  
+
+
+
+const filteredExpedientes = React.useMemo(() => {
+  return expedientes.filter(item => {
+    const matchEstado = estado ? item.estado === estado : true;
+    console.log(selectedDate)
+    
+    console.log(matchEstado)
+    const matchEspecialidad = especialidad
+      ? item.especialidad.toLowerCase() === especialidad.toLowerCase()
+      : true;
+    return   matchEstado && matchEspecialidad;
+  });
+}, [expedientes, estado, especialidad]);
 
 
 
@@ -186,7 +407,7 @@ const renderMainContent = () => (
             focusedExpediente?.id === item.id && { borderColor: 'blue', borderWidth: 2 }
           ]}>
             <Text style={styles.cardTitle}>{item.title}</Text>
-            <Text style={styles.cardDescription}>{item.description}</Text>
+            <Text style={styles.cardDescription}>{item.observaciones}</Text>
             <Text style={styles.cardDate}>Fecha Límite: {item.fechaLimite}</Text>
             {expedientesNotas[item.id] && (
               <Text style={{ marginTop: 5, fontStyle: 'italic' }}>
@@ -240,54 +461,7 @@ const renderMainContent = () => (
     </View>
   );
 
-const renderNoteScreen = () => (
-  <View>
-    <Text style={{ fontSize: 20, marginVertical: 10, textAlign: 'center' }}>
-      Añadir nota
-    </Text>
 
-    {focusedExpediente ? (
-      <>
-        <Text style={{ textAlign: 'center' }}>
-          Añadiendo nota a: {focusedExpediente.title}
-        </Text>
-        <TextInput
-          placeholder="Escribe una nota..."
-          value={noteText}
-          onChangeText={setNoteText}
-          multiline
-          style={{
-            borderWidth: 1,
-            borderColor: '#ccc',
-            padding: 10,
-            margin: 10,
-            borderRadius: 8,
-            height: 100,
-            textAlign: 'center'
-          }}
-        />
-        <Pressable
-          style={styles.boton}
-          onPress={() => {
-            setExpedientesNotas({ ...expedientesNotas, [focusedExpediente.id]: noteText });
-            setNoteText('');
-            setActiveScreen('main');
-          }}
-        >
-          <Text>Guardar nota</Text>
-        </Pressable>
-      </>
-    ) : (
-      <Text style={{ textAlign: 'center', marginVertical: 20 }}>
-        Debes seleccionar un expediente primero
-      </Text>
-    )}
-
-    <Pressable style={styles.boton} onPress={() => setActiveScreen('main')} >
-      <Text>Volver</Text>
-    </Pressable>
-  </View>
-);
 
   const renderFormScreen = () => (
     <View>
@@ -327,100 +501,510 @@ const renderNoteScreen = () => (
 
   const renderCalendarScreen = () => (
     <View >
-      <Calendar
-        onDayPress={(day) => setSelectedDate(day.dateString)}
-        markedDates={{
-          ...getMarkedDates(expedientes),
-          [selectedDate]: {
-            selected: true,
-            selectedColor: '#00adf5',
+<Calendar
+  markingType="custom"
+  markedDates={{
+    ...getMarkedDates(expedientes),
+    ...(selectedDate ? {
+      [selectedDate]: {
+        ...(getMarkedDates(expedientes)[selectedDate] || {}),
+        selected: true,
+        selectedColor: '#00adf5',
+        customStyles: {
+          container: {
+            backgroundColor: '#00adf5',
+            borderRadius: 5,
+            paddingHorizontal:0,
+            paddingVertical: 0,
+            height:'110%'
           },
-        }}
-        theme={{
-          selectedDayBackgroundColor: '#00adf5',
-          todayTextColor: '#00adf5',
-          dotColor: 'red',
-          arrowColor: '#00adf5',
-        }}
-      />
+        }
+      }
+    } : {})
+  }}
+  onDayPress={(day) => setSelectedDate(day.dateString)}
+  theme={{
+    selectedDayBackgroundColor: '#00adf5',
+    todayTextColor: '#00adf5',
+    arrowColor: '#00adf5',
+  }}
+/>
+
+
 
       {selectedDate ? (
         <View style={styles.listContainer}>
           <Text style={styles.title}>Expedientes para {selectedDate}</Text>
           <FlatList
-            data={filteredExpedientes}
+            data={selectedExp}
+            showsVerticalScrollIndicator={false}
             keyExtractor={(item) => item.id}
+            numColumns={4}
+            
+            columnWrapperStyle={{ justifyContent: 'space-between' }}
             renderItem={({ item }) => (
-              <View style={styles.card}>
-                <Text style={styles.cardTitle}>{item.title}</Text>
-                <Text>{item.description}</Text>
-              </View>
+            <Pressable
+                  style={({ pressed }) => [
+                    styles.button,
+                    { opacity: pressed ? 0.7 : 1 }
+                  ]} 
+                  onPress={() => {
+                          setSelectedItem(item);
+                          setModalVisible(true);
+                        }}>
+                <View style={styles.card}>
+                {width > 600 ? (
+                <View style={{alignSelf:'space-between',width:'100%', flexDirection:'row',alignItems:'center', justifyContent:'space-between'}}>
+                    <Text style={styles.cardTitle}>{item.title}</Text>
+
+                      <EstadoText estado={item.estado} long={true} />
+                    </View>
+                  ) :
+                    (
+                <View style={{alignSelf:'space-between',width:'100%', flexDirection:'row',alignItems:'center', justifyContent:'space-between'}}>
+                    <Text style={[styles.cardTitle,{width:'30%'}]}>{item.title}</Text>
+
+                        <EstadoText estado={item.estado} long={false}/>
+                    </View>
+                    )
+                  }
+                {item.especialidad === 'Trauma' && (
+                  <EspecialidadIcon IconComponent={Trauma} nombre="Trauma" />
+                )}
+                {item.especialidad === 'Rehabilitacion' && (
+                  <EspecialidadIcon IconComponent={Rehabilitacion} nombre="Rehabilitación" />
+                )}
+                {item.especialidad === 'Neurología' && (
+                  <EspecialidadIcon IconComponent={Neurologia} nombre="Neurología" />
+                )}
+                {item.especialidad === 'Neurofisiologia' && (
+                  <EspecialidadIcon IconComponent={Neurofisiologia} nombre="Neurofisiología" />
+                )}
+                {item.especialidad === 'Neurocirugia' && (
+                  <EspecialidadIcon IconComponent={Neurocirugia} nombre="Neurocirugía" />
+                )}
+                {item.especialidad === 'Psiquiatria' && (
+                  <EspecialidadIcon IconComponent={Psicologia} nombre="Psiquiatría" />
+                )}
+                {item.especialidad === 'Oftalmologia' && (
+                  <EspecialidadIcon IconComponent={Oftalmologia} nombre="Oftalmología" />
+                )}
+                {item.especialidad === 'ORL' && (
+                 <EspecialidadIcon IconComponent={ORL} nombre="Otorrinolaringología" />
+                 )}     
+                {item.especialidad === 'Ginecologia' && (
+                  <EspecialidadIcon IconComponent={Ginecologia} nombre="Ginecología" />
+                )}
+                {item.especialidad === 'Med. Legal' && (
+                  <EspecialidadIcon IconComponent={MedLegal} nombre="Medicina Legal" />
+                )}
+                {item.especialidad === 'Med. Trabajo' && (
+                  <EspecialidadIcon IconComponent={MedTrabajo} nombre="Medicina del Trabajo" />
+                )}
+                {item.especialidad === 'Odontologia' && (
+                  <EspecialidadIcon IconComponent={Odontologia} nombre="Odontología" />
+                )}
+                {item.especialidad === 'Maxilo Facial' && (
+                  <EspecialidadIcon IconComponent={MaxiloFacial} nombre="Maxilofacial" />
+                )}
+                   
+<View style={{ alignSelf: 'center', marginLeft: 10, marginTop: 10, minWidth: '60%' }}>
+  {item.observaciones.slice(0, 1).map((obs, index) => (
+    <View
+      key={index}
+      style={{
+        borderRadius: 8,
+        paddingVertical: 10,
+        paddingHorizontal: 14,
+        minWidth: '100%',
+        backgroundColor: '#f8f9fa', // gris claro para suavizar fondo
+        alignSelf: 'center',
+        shadowColor: '#000',
+        shadowOpacity: 0.05,
+        shadowOffset: { width: 0, height: 1 },
+        shadowRadius: 2,
+        elevation: 1, // para Android
+      }}
+    >
+      <Text
+        style={{
+          fontSize: 14,
+          fontWeight: '300',
+          color: '#333',
+          lineHeight: 20,
+          textAlign: 'center', // mejor para lectura larga
+        }}
+      >
+        {obs}
+      </Text>
+    </View>
+  ))}
+</View>
+
+
+
+                </View>
+              </Pressable>
+              
             )}
           />
+           
         </View>
       ) : (
-        <Text style={{ marginTop: 20 }}>Selecciona una fecha</Text>
-      )}
-      <Pressable style={styles.boton} onPress={() => setActiveScreen('main')} ><Text>Volver</Text></Pressable>
-    </View>
-  );
+        <Text style={{ marginTop: 20 }}></Text>
+      )
+      
+      }
+      <View style={[styles.listContainer, { marginTop: 30 }]}>
+        {width > 600 ? (
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom:30,alignItems: 'center', minWidth: '100%', height: '3%', zIndex: 10000, overflow: 'visible', position: 'relative' }}>
+            <Text style={styles.title}>Todos los expedientes</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginLeft: '40vw', alignItems: 'center', minWidth: '30%', maxWidth: '60%', height: '100%', zIndex: 10000, overflow: 'visible', position: 'relative' }}>
+              <DropDownPicker
+                open={openEspecialidad}
+                value={especialidad}
+                items={especialidades}
+                  
+                setOpen={setOpenEspecialidad}
+                  
+                zIndex={30000}
+                zIndexInverse={3000}
+                dropDownDirection="BOTTOM"
+                setValue={setEspecialidad}
+                setItems={setEspecialidades}
+                placeholder="Especialidad"
+                style={{ width: '40%', maxHeight: 40, border: '0px solid #ccc' }}
+                containerStyle={{ marginHorizontal: 5, width: '70%', zIndex: 1000, backgroundColor: '#fff', }}
+                dropDownContainerStyle={{ minHeight: '1600%' }}
+                renderListItem={props => (
+                  <Pressable
+                    onPress={() => props.onPress(props)}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10, }}>
+                      <Text style={{ marginLeft: 8 }}>{props.item.label}</Text>
+                      {props.item.icon && props.item.icon()}
+                    </View>
+                  </Pressable>
+                )}
+              />
+ 
+              <DropDownPicker
+                open={open}
+                value={estado}
+                items={estados}
+                setOpen={setOpen}
+                setValue={setEstado}
+                setItems={setEstados}
+                dropDownDirection="BOTTOM"
+                placeholder="Estado"
+                style={{ width: '30%', border: '0px solid #ccc' }}
+                containerStyle={{ marginHorizontal: 5, width: '30%', zIndex: 10000 }}
+                                dropDownContainerStyle={{ minHeight: '900%',minWidth:'150%' }}
 
+                renderListItem={props => (
+                  <Pressable
+                    onPress={() => props.onPress(props)}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10 }}>
+                      {"render" in props.item && typeof props.item.render === "function"
+                        ? props.item.render()
+                        : <Text>{props.item.label}</Text>
+                      }
+                    </View>
+                  </Pressable>
+                )}
+              />
+              {estado && (
+                <View style={{ justifyContent: 'flex-start', alignContent: 'center' }}>
+                  <EstadoText estado={estado} long />
+                </View>
+              )}
+
+
+              {/* 
+          <Pressable style={styles.filtro} onPress={() => setActiveScreen('main')}><Text>Especialidad</Text><Text>↓</Text></Pressable>
+          <Pressable style={styles.filtro} onPress={() => setActiveScreen('main')}><Text>Estado</Text><Text>↓</Text></Pressable>
+          */}
+            </View>
+          </View>
+        ) :
+          (
+            <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', minWidth: '100%', height: '3%', zIndex: 10000, overflow: 'visible', position: 'relative' }}>
+            <Text style={[styles.title,{alignSelf:'center'}]}>Todos los expedientes</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', minWidth: '100%', maxWidth: '60%', height: '100%', zIndex: 10000, overflow: 'visible', position: 'relative' }}>
+              <DropDownPicker
+                open={openEspecialidad}
+                value={especialidad}
+                items={especialidades}
+                  
+                setOpen={setOpenEspecialidad}
+                  
+                zIndex={30000}
+                zIndexInverse={3000}
+                dropDownDirection="BOTTOM"
+                setValue={setEspecialidad}
+                setItems={setEspecialidades}
+                placeholder="Especialidad"
+                style={{ width: '20%', maxHeight: 20, border: '0px solid #ccc' }}
+                containerStyle={{ marginHorizontal: 5, width: '30%', zIndex: 1000, backgroundColor: '#fff', }}
+                dropDownContainerStyle={{ height: '1600%',width:'300%' }}
+                
+                renderListItem={props => (
+                  <Pressable
+                    onPress={() => props.onPress(props)}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10, }}>
+                      <Text style={{ marginLeft: 8 }}>{props.item.label}</Text>
+                      {props.item.icon && props.item.icon()}
+                    </View>
+                  </Pressable>
+                )}
+              />
+ 
+              <DropDownPicker
+                open={open}
+                value={estado}
+                items={estados}
+                setOpen={setOpen}
+                setValue={setEstado}
+                setItems={setEstados}
+                dropDownDirection="BOTTOM"
+                placeholder="Estado"
+                style={{ width: '30%', border: '0px solid #ccc' }}
+                containerStyle={{ marginHorizontal: 5, width: '50%', zIndex: 10000,flexDirection:'row-reverse' }}
+                dropDownContainerStyle={{width:'150%'}}
+                renderListItem={props => (
+                  <Pressable
+                    onPress={() => props.onPress(props)}>
+                    <View style={{ flexDirection: 'row',justifyContent:'center', alignItems: 'center', padding: 5 }}>
+                      {"render" in props.item && typeof props.item.render === "function"
+                        ? props.item.render()
+                        : <Text>{props.item.label}</Text>
+                      }
+                    </View>
+                  </Pressable>
+                )}
+              />
+              {estado && (
+                <View style={{ justifyContent: 'flex-start', alignContent: 'center' }}>
+                  <EstadoText estado={estado} long />
+                </View>
+              )}
+
+
+              {/* 
+          <Pressable style={styles.filtro} onPress={() => setActiveScreen('main')}><Text>Especialidad</Text><Text>↓</Text></Pressable>
+          <Pressable style={styles.filtro} onPress={() => setActiveScreen('main')}><Text>Estado</Text><Text>↓</Text></Pressable>
+          */}
+            </View>
+          </View>
+        )}
+        
+  <TextInput
+    placeholder="Buscar expediente..."
+    value={searchText}
+    onChangeText={setSearchText}
+    style={{
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 8,
+      padding: 8,
+      marginBottom: 10,
+    }}
+  />
+
+  <FlatList
+    data={filteredExpedientes }
+          keyExtractor={(item) => item.id}
+           showsVerticalScrollIndicator={false}
+    numColumns={NUM_COLUMNS}
+    columnWrapperStyle={{ justifyContent: 'space-between' }}
+          renderItem={({ item }) => (
+            <>
+              <Pressable
+                  style={({ pressed }) => [
+                    styles.button,
+                    { opacity: pressed ? 0.7 : 1 }
+                  ]}
+                onPress={() => {
+                        setSelectedItem(item);
+                        setModalVisible(true);
+                      }}>
+                <View style={styles.card}>
+                {width > 600 ? (
+                <View style={{alignSelf:'space-between',width:'100%', flexDirection:'row',alignItems:'center', justifyContent:'space-between'}}>
+                    <Text style={styles.cardTitle}>{item.title}</Text>
+
+                      <EstadoText estado={item.estado} long={true} />
+                    </View>
+                  ) :
+                    (
+                <View style={{alignSelf:'space-between',width:'100%', flexDirection:'row',alignItems:'center', justifyContent:'space-between'}}>
+                    <Text style={styles.cardTitle}>{item.title}</Text>
+
+                        <EstadoText estado={item.estado} long={false}/>
+                    </View>
+                    )
+                  }
+
+                  {/* Iconos de especialidad */}
+                  {item.especialidad === 'Trauma' && (
+                    <EspecialidadIcon IconComponent={Trauma} nombre="Trauma" />
+                  )}
+                  {item.especialidad === 'Rehabilitacion' && (
+                    <EspecialidadIcon IconComponent={Rehabilitacion} nombre="Rehabilitación" />
+                  )}
+                  {item.especialidad === 'Neurología' && (
+                    <EspecialidadIcon IconComponent={Neurologia} nombre="Neurología" />
+                  )}
+                  {item.especialidad === 'Neurofisiologia' && (
+                    <EspecialidadIcon IconComponent={Neurofisiologia} nombre="Neurofisiología" />
+                  )}
+                  {item.especialidad === 'Neurocirugia' && (
+                    <EspecialidadIcon IconComponent={Neurocirugia} nombre="Neurocirugía" />
+                  )}
+                  {item.especialidad === 'Psiquiatria' && (
+                    <EspecialidadIcon IconComponent={Psicologia} nombre="Psiquiatría" />
+                  )}
+                  {item.especialidad === 'ORL' && (
+                    <EspecialidadIcon IconComponent={ORL} nombre="Otorrinolaringología" />
+                  )}        
+                  {item.especialidad === 'Oftalmologia' && (
+                    <EspecialidadIcon IconComponent={Oftalmologia} nombre="Oftalmología" />
+                  )}
+                  {item.especialidad === 'Ginecologia' && (
+                    <EspecialidadIcon IconComponent={Ginecologia} nombre="Ginecología" />
+                  )}
+                  {item.especialidad === 'Med. Legal' && (
+                    <EspecialidadIcon IconComponent={MedLegal} nombre="Medicina Legal" />
+                  )}
+                  {item.especialidad === 'Med. Trabajo' && (
+                    <EspecialidadIcon IconComponent={MedTrabajo} nombre="Medicina del Trabajo" />
+                  )}
+                  {item.especialidad === 'Odontologia' && (
+                    <EspecialidadIcon IconComponent={Odontologia} nombre="Odontología" />
+                  )}
+                  {item.especialidad === 'Maxilo Facial' && (
+                    <EspecialidadIcon IconComponent={MaxiloFacial} nombre="Maxilofacial" />
+                  )}
+                
+                <View style={{ alignSelf: 'center', marginLeft: 10, marginTop: 10, minWidth: '60%' }}>
+                  {item.observaciones.slice(0, 1).map((obs, index) => (
+                    <View
+                      key={index}
+                      style={{
+                        borderRadius: 8,
+                        paddingVertical: 10,
+                        paddingHorizontal: 14,
+                        minWidth: '100%',
+                        backgroundColor: '#f8f9fa', // gris claro para suavizar fondo
+                        alignSelf: 'center',
+                        shadowColor: '#000',
+                        shadowOpacity: 0.05,
+                        shadowOffset: { width: 0, height: 1 },
+                        shadowRadius: 2,
+                        elevation: 1, // para Android
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          fontWeight: '300',
+                          color: '#333',
+                          lineHeight: 20,
+                          textAlign: 'center', // mejor para lectura larga
+                        }}
+                      >
+                        {obs}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+
+                </View>
+              </Pressable>      
+              <EditModal
+                visible={modalVisible}
+                item={selectedItem}
+                onClose={() => setModalVisible(false)}
+                onSave={(updatedItem) => {
+                  handleSave(updatedItem);
+                  setModalVisible(false);
+                }}
+              />
+            </>
+)}
+  />
+</View>
+
+    </View>
+
+  );
 
 
   const renderScreen = () => {
     switch (activeScreen) {
       case 'search':
         return renderSearchScreen();
-      case 'note':
-        return renderNoteScreen();
       case 'form':
         return renderFormScreen();
       case 'calendar':
-        return renderCalendarScreen();
-      default:
         return renderMainContent();
+      default:
+        return renderCalendarScreen();
     }
   };
+
+  const animatedValue = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.timing(animatedValue, {
+        toValue: 1,
+        duration: 2000,
+        useNativeDriver: false,  // <---- CAMBIO IMPORTANTE
+      })
+    ).start();
+  }, []);
+
+  const translateX = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-200, 200],
+  });
+
   return (
     <Animated.View
           style={{
-        opacity: fadeAnim,
+            opacity: fadeAnim,
             height:'100%',
             width:'100%',
             transform: [{ scale: scaleAnim }],
           }}
         >
-      <ImageBackground
-      source={{uri:'https://wallpapers.com/images/hd/business-background-vkyltmd1r47q5c2z.jpg'
-}} // Usa tu base64 largo aquí
-        style={{ flex: 1 }}
+      <View
+      style={styles.general}
       > 
-        <View style={styles.titleContainer}>
-          {/*
-          <Image style={{zIndex:2,top:30,left:'30vw',position:'absolute', width:'13%', height:'30vh'}} source={{uri:'data:image/jpeg;base64,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'}}></Image>
-           */}
-          <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#000' }}>¡Hola Carlos!</Text>
-          <Text style={{ fontSize: 16, color: '#000' }}>Gestor Expedientes</Text>
-        </View>  
+
      <ScrollView 
         contentContainerStyle={{
           paddingTop: 20,
-          width:'80%',
-          height:'100%',
-            alignSelf: 'center',
+          marginTop:'5vh',
+          width:'90vw',
+          
+          alignSelf: 'center',
           borderRadius:25,
           backgroundColor: '#fff',
-          flexGrow: 1,
+            flexGrow: 1,
+          
         }}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
           
       >
         <View
         >
-          {renderScreen()}
+            {renderScreen()}
+            
         </View>
       </ScrollView>
-      </ImageBackground>
+      </View>
     </Animated.View>
   );
 }
@@ -429,9 +1013,36 @@ const renderNoteScreen = () => (
 
 
 const styles = StyleSheet.create({
-  label:{
+  label: {
     color: 'black',
+    fontWeight: '300',
   },
+
+  general: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+  },
+
+  text: {
+    fontSize: 24,
+    color: 'black',
+    fontWeight: '300',
+    letterSpacing: 0.3,
+  },
+
+  gradient: {
+    flex: 1,
+  },
+
+  subText: {
+    fontSize: 15,
+    color: 'black',
+    fontWeight: '300',
+  },
+
   titleContainer: {
     flexDirection: 'column',
     alignItems: 'center',
@@ -441,31 +1052,49 @@ const styles = StyleSheet.create({
     gap: 8,
     zIndex: 1,
   },
-  boton:{
-    backgroundColor: '#33c7ff',
-    padding: 10,
-    width:'30%',
+  filtro: {
+    maxWidth: '30%',
+    height:'30%',
+    flex: 1,
+    flexDirection: 'row',
+    borderRadius: 15,
+    backgroundColor: '#f0f0f0',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: '3%',
+  },
+
+  boton: {
+    backgroundColor: 'rgb(0,0,0,0)',
+    padding: 0,
+    width: '100%',
     alignSelf: 'center',
     borderRadius: 5,
     alignItems: 'center',
     marginVertical: 10,
     marginHorizontal: 20,
-    color: '#fff',  
+    color: '#fff',
   },
+
   stepContainer: {
     gap: 8,
     marginBottom: 8,
   },
-    cardDescription: {
-    fontSize: 14,
+
+  cardDescription: {
+    fontSize: 13,
     marginTop: 4,
     color: '#666',
+    fontWeight: '300',
   },
+
   cardDate: {
-    fontSize: 12,
+    fontSize: 11,
     marginTop: 8,
     color: '#999',
+    fontWeight: '300',
   },
+
   reactLogo: {
     height: 178,
     width: 290,
@@ -473,39 +1102,67 @@ const styles = StyleSheet.create({
     left: 0,
     position: 'absolute',
   },
-    backgroundImage: {
+
+  backgroundImage: {
     width: '100%',
     height: '100%',
     zIndex: -1,
     position: 'absolute',
   },
-    scrollContainer: {
+
+  scrollContainer: {
     paddingHorizontal: 10,
     paddingVertical: 20,
     flexDirection: 'column',
     gap: 10,
   },
+    picker: {
+    height: 50,
+    backgroundColor: '#fff',
+  },
+
   bubble: {
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 20,
-   backgroundColor: 'rgba(0,0,0,0.4)',    borderWidth: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    borderWidth: 1,
     borderColor: '#a0cfff',
   },
+
   bubbleText: {
-    fontSize: 16,
-       backgroundColor: 'rgba(0,0,0,0.4)',
+    fontSize: 15,
+    backgroundColor: 'rgba(0,0,0,0.4)',
     textAlign: 'center',
+    fontWeight: '300',
+    color: '#fff',
   },
-  iconButton:{
+
+  iconButton: {
     display: 'flex',
-    minWidth:'10%',
+    minWidth: '10%',
     justifyContent: 'center',
     alignItems: 'center',
-    },
-      container: { flex: 1, paddingTop: 40, backgroundColor: '#fff' },
-  listContainer: { padding: 20 },
-  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
+  },
+
+  container: {
+    flex: 1,
+    paddingTop: 40,
+    backgroundColor: '#fff',
+  },
+
+  listContainer: {
+    padding: 20,
+    width: '100%',
+  },
+
+  title: {
+    fontSize: 18,
+    fontWeight: '400',
+    marginBottom: 10,
+    minWidth:180
+  },
+
   card: {
     backgroundColor: '#f9f9f9',
     padding: 12,
@@ -514,6 +1171,62 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 8,
     elevation: 2,
+    marginHorizontal: '20%',
+    width: '100%',   
+    
   },
-  cardTitle: { fontWeight: 'bold', marginBottom: 4 },
+  button: {
+    backgroundColor:'rgb(0,0,0,0)',
+    padding: 12,
+    marginBottom: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    elevation: 2,
+    marginHorizontal: 10,
+    flex: 1,
+    zIndex:2,
+  },
+  text: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+
+  cardTitle: {
+    fontWeight: '400',
+    marginBottom: 4,
+    marginRight: 10,
+    fontSize: RFValue(8),
+
+  },
+    modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  modalContainer: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 20,
+    elevation: 10,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    marginBottom: 15,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
 });

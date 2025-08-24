@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Dimensions } from 'react-native';
+
 import Svg, {
   Defs,
   ClipPath,
@@ -15,16 +16,18 @@ import Animated, {
   withSequence,
   runOnJS,
 } from 'react-native-reanimated';
+import { useAuth } from '@/context/auth';
 
 const size = 200;
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
 const AnimatedG = Animated.createAnimatedComponent(G);
 
+
 export default function LogoBreakAnimation({ 
   imageUri, 
   onFinish,
-  duration = 3000 
+  duration = 1000 
 }: {
   imageUri: any;
   onFinish?: () => void;
@@ -78,9 +81,11 @@ export default function LogoBreakAnimation({
 
 React.useEffect(() => {
   const waitBeforeExplode = 7;
-  const explodeDuration = 3000;
+  const explodeDuration = 2000;
   const easing = Easing.bezier(0.22, 1, 0.36, 1);
   let animationComplete = false;
+// Marcar la mitad de la animación
+
 
   const timeout = setTimeout(() => {
     // Contador para rastrear animaciones completadas
@@ -91,6 +96,7 @@ React.useEffect(() => {
       completedAnimations++;
       if (completedAnimations === totalAnimations && !animationComplete) {
         animationComplete = true;
+        setAnimationFinished(true);
         onFinish?.();
       }
     };
@@ -142,6 +148,7 @@ React.useEffect(() => {
   return () => {
     clearTimeout(timeout);
     animationComplete = true;
+
   };
 }, []);
 
