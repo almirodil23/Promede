@@ -46,15 +46,11 @@ import EditModal from '@/components/EditModal';
 import { RFValue } from "react-native-responsive-fontsize";
 import { Picker } from '@react-native-picker/picker';
 
-
-
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const CARD_MARGIN = 10;
 const NUM_COLUMNS = SCREEN_WIDTH < 400 ? 2 : 4;
 const CARD_WIDTH = (SCREEN_WIDTH - CARD_MARGIN * (NUM_COLUMNS * 2)) / NUM_COLUMNS;
-
-
 
 export default function HomeScreen() {
   const { width } = Dimensions.get('window');
@@ -70,289 +66,120 @@ export default function HomeScreen() {
   const [modalVisible, setModalVisible] = React.useState(false);
   const [selectedItem, setSelectedItem] = React.useState(null);
   const [data, setData] = React.useState(expedientes);
-  const NUM_COLUMNS = width < 800 ? 2 : 4; 
+  const NUM_COLUMNS = width < 800 ? 2 : 4;
   const [openEspecialidad, setOpenEspecialidad] = useState(false);
   const [especialidad, setEspecialidad] = useState(null);
   const [estado, setEstado] = useState(null);
   const [open, setOpen] = useState(false);
 
-
-
-
   const estadosArray = [
-  { label: 'Asignar', value: 'Asignar', render: () => <EstadoText estado="Asignar" long /> },
-  { label: 'Reclamar', value: 'Reclamar', render: () => <EstadoText estado="Reclamar" long /> },
-  { label: 'Corregir', value: 'Corregir', render: () => <EstadoText estado="Corregir" long /> },
-  { label: 'Letrados', value: 'Letrados', render: () => <EstadoText estado="Letrados" long /> },
-  { label: 'Aseguradora', value: 'Aseguradora', render: () => <EstadoText estado="Aseguradora" long /> },
-  { label: 'Documentacion', value: 'Documentacion', render: () => <EstadoText estado="Documentacion" long /> },
-  { label: 'Otros', value: 'Otros', render: () => <EstadoText estado="Otros" long /> },
-];
+    { label: 'Asignar', value: 'Asignar', render: () => <EstadoText estado="Asignar" long /> },
+    { label: 'Reclamar', value: 'Reclamar', render: () => <EstadoText estado="Reclamar" long /> },
+    { label: 'Corregir', value: 'Corregir', render: () => <EstadoText estado="Corregir" long /> },
+    { label: 'Letrados', value: 'Letrados', render: () => <EstadoText estado="Letrados" long /> },
+    { label: 'Aseguradora', value: 'Aseguradora', render: () => <EstadoText estado="Aseguradora" long /> },
+    { label: 'Documentacion', value: 'Documentacion', render: () => <EstadoText estado="Documentacion" long /> },
+    { label: 'Otros', value: 'Otros', render: () => <EstadoText estado="Otros" long /> },
+  ];
 
   const [estados, setEstados] = useState(estadosArray);
 
-const [especialidades, setEspecialidades] = useState([
-  {
-    label: "Trauma",
-    value: "trauma",
-    icon: () => <EspecialidadIcon IconComponent={Trauma} nombre="Trauma" />
-  },
-  {
-    label: "Rehabilitación",
-    value: "rehabilitacion",
-    icon: () => <EspecialidadIcon IconComponent={Rehabilitacion} nombre="Rehabilitación" />
-  },
-  {
-    label: "Neurología",
-    value: "neurologia",
-    icon: () => <EspecialidadIcon IconComponent={Neurologia} nombre="Neurología" />
-  },
-  {
-    label: "Neurofisiología",
-    value: "neurofisiologia",
-    icon: () => <EspecialidadIcon IconComponent={Neurofisiologia} nombre="Neurofisiología" />
-  },
-  {
-    label: "Neurocirugía",
-    value: "neurocirugia",
-    icon: () => <EspecialidadIcon IconComponent={Neurocirugia} nombre="Neurocirugía" />
-  },
-  {
-    label: "Psiquiatría",
-    value: "psiquiatria",
-    icon: () => <EspecialidadIcon IconComponent={Psicologia} nombre="Psiquiatría" />
-  },
-  {
-    label: "Otorrinolaringología",
-    value: "orl",
-    icon: () => <EspecialidadIcon IconComponent={ORL} nombre="Otorrinolaringología" />
-  },
-  {
-    label: "Oftalmología",
-    value: "oftalmologia",
-    icon: () => <EspecialidadIcon IconComponent={Oftalmologia} nombre="Oftalmología" />
-  },
-  {
-    label: "Ginecología",
-    value: "ginecologia",
-    icon: () => <EspecialidadIcon IconComponent={Ginecologia} nombre="Ginecología" />
-  },
-  {
-    label: "Medicina Legal",
-    value: "medlegal",
-    icon: () => <EspecialidadIcon IconComponent={MedLegal} nombre="Medicina Legal" />
-  },
-  {
-    label: "Medicina del Trabajo",
-    value: "medtrabajo",
-    icon: () => <EspecialidadIcon IconComponent={MedTrabajo} nombre="Medicina del Trabajo" />
-  },
-  {
-    label: "Odontología",
-    value: "odontologia",
-    icon: () => <EspecialidadIcon IconComponent={Odontologia} nombre="Odontología" />
-  },
-  {
-    label: "Maxilofacial",
-    value: "maxilofacial",
-    icon: () => <EspecialidadIcon IconComponent={MaxiloFacial} nombre="Maxilofacial" />
-  },
-]);
+  const [especialidades, setEspecialidades] = useState([
+    { label: "Trauma", value: "trauma", icon: () => <EspecialidadIcon IconComponent={Trauma} nombre="Trauma" /> },
+    { label: "Rehabilitación", value: "rehabilitacion", icon: () => <EspecialidadIcon IconComponent={Rehabilitacion} nombre="Rehabilitación" /> },
+    { label: "Neurología", value: "neurologia", icon: () => <EspecialidadIcon IconComponent={Neurologia} nombre="Neurología" /> },
+    { label: "Neurofisiología", value: "neurofisiologia", icon: () => <EspecialidadIcon IconComponent={Neurofisiologia} nombre="Neurofisiología" /> },
+    { label: "Neurocirugía", value: "neurocirugia", icon: () => <EspecialidadIcon IconComponent={Neurocirugia} nombre="Neurocirugía" /> },
+    { label: "Psiquiatría", value: "psiquiatria", icon: () => <EspecialidadIcon IconComponent={Psicologia} nombre="Psiquiatría" /> },
+    { label: "Otorrinolaringología", value: "orl", icon: () => <EspecialidadIcon IconComponent={ORL} nombre="Otorrinolaringología" /> },
+    { label: "Oftalmología", value: "oftalmologia", icon: () => <EspecialidadIcon IconComponent={Oftalmologia} nombre="Oftalmología" /> },
+    { label: "Ginecología", value: "ginecologia", icon: () => <EspecialidadIcon IconComponent={Ginecologia} nombre="Ginecología" /> },
+    { label: "Medicina Legal", value: "medlegal", icon: () => <EspecialidadIcon IconComponent={MedLegal} nombre="Medicina Legal" /> },
+    { label: "Medicina del Trabajo", value: "medtrabajo", icon: () => <EspecialidadIcon IconComponent={MedTrabajo} nombre="Medicina del Trabajo" /> },
+    { label: "Odontología", value: "odontologia", icon: () => <EspecialidadIcon IconComponent={Odontologia} nombre="Odontología" /> },
+    { label: "Maxilofacial", value: "maxilofacial", icon: () => <EspecialidadIcon IconComponent={MaxiloFacial} nombre="Maxilofacial" /> },
+  ]);
 
-
-  
-
-
-    const handleSave = (updatedItem) => {
-    //
-    setData((prevData) =>
-      prevData.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-    );
+  const handleSave = (updatedItem) => {
+    setData((prevData) => prevData.map((item) => (item.id === updatedItem.id ? updatedItem : item)));
     setModalVisible(false);
   };
 
-  
-  
-  const filteredBySearch = expedientes.filter(exp =>
-  exp.title.toLowerCase().includes(searchText.toLowerCase())
-);
+  const filteredBySearch = expedientes.filter(exp => exp.title.toLowerCase().includes(searchText.toLowerCase()));
 
   const today = new Date();
   const nextMonth = new Date();
   nextMonth.setMonth(today.getMonth() + 1);
+
   const acc = expedientes.reduce((acc, expediente) => {
-  const fecha = expediente?.fechaLimite;
+    const fecha = expediente?.fechaLimite;
     const relevancia = expediente?.relevancia;
-    function calcHeatmapColor(value, min, max) {
-  if(max === min) return '#00ff00';
-  const hue = 120 - 120 * ((value - min) / (max - min));
-  return `hsl(${hue}, 100%, 45%)`;
-}
+    if (!fecha || typeof relevancia !== 'number') return acc;
 
-
-const getMarkedDates = (expedientes) => {
-  const relevanciaPorFecha = {};
-  let min = Infinity, max = -Infinity;
-
-  expedientes.forEach(exp => {
-    const fecha = exp.fechaLimite;
-    if (!relevanciaPorFecha[fecha]) relevanciaPorFecha[fecha] = 0;
-    relevanciaPorFecha[fecha] += exp.relevancia;
-
-    min = Math.min(min, relevanciaPorFecha[fecha]);
-    max = Math.max(max, relevanciaPorFecha[fecha]);
-  });
-
-  const interpolateColor = (value) => {
-    if (max === min) return '#00ff00';
-    const ratio = (value - min) / (max - min);
-    const red = Math.round(255 * ratio);
-    const green = Math.round(255 * (1 - ratio));
-    return `#${red.toString(16).padStart(2, '0')}${green.toString(16).padStart(2, '0')}00`;
-  };
-
-  const markedDates = {};
-  Object.keys(relevanciaPorFecha).forEach(fecha => {
-    markedDates[fecha] = {
-      marked: true,
-      dotColor: interpolateColor(relevanciaPorFecha[fecha])
-    };
-  });
-
-  return markedDates;
-};
-
-
-    
-  const getRelevanceByDate = () => {
-  const result = {};
-  let minRelevance = Infinity, maxRelevance = -Infinity;
-
-  expedientes.forEach(exp => {
-    const fecha = exp.fechaLimite;
-    result[fecha] = (result[fecha] || 0) + exp.relevancia;
-    if (result[fecha] < minRelevance) minRelevance = result[fecha];
-    if (result[fecha] > maxRelevance) maxRelevance = result[fecha];
-  });
-
-  return { result, minRelevance, maxRelevance };
-};
-
-
-    
-
-  if (!fecha || typeof relevancia !== 'number') return acc;
-
-  if (!acc[fecha]) {
-    acc[fecha] = { date: fecha, count: 0 };
-  }
-
-  acc[fecha].count += relevancia;
-  return acc;
-}, {} as Record<string, { date: string; count: number }>);
-
+    if (!acc[fecha]) acc[fecha] = { date: fecha, count: 0 };
+    acc[fecha].count += relevancia;
+    return acc;
+  }, {} as Record<string, { date: string; count: number }>);
 
   const startDate = new Date();
-  startDate.setDate(today.getDate() - 120); 
+  startDate.setDate(today.getDate() - 120);
+  const daysInRange = eachDayOfInterval({ start: startDate, end: today });
+  const values = daysInRange.map((day) => {
+    const dateStr = format(day, 'yyyy-MM-dd');
+    const match = acc[dateStr];
+    return { date: dateStr, count: (match && typeof match.count === 'number') ? match.count : 0 };
+  });
 
-const daysInRange = eachDayOfInterval({ start: startDate, end: today });
-
-const values = daysInRange.map((day) => {
-  const dateStr = format(day, 'yyyy-MM-dd');
-  const match = acc[dateStr];
-  return {
-    date: dateStr,
-    count: (match && typeof match.count === 'number') ? match.count : 0,
-  };
-});
-  
-  
-  
-
-
-
-
-const scaleAnim = useRef(new Animated.Value(0)).current;
-const heatmapValues = expedientes.map(exp => ({
-  date: exp.fechaLimite,
-  count: exp.relevancia, 
-}))
-
-
-
-
-
+  const scaleAnim = useRef(new Animated.Value(0)).current;
+  const heatmapValues = expedientes.map(exp => ({ date: exp.fechaLimite, count: exp.relevancia }));
 
   useEffect(() => {
-  setSelectedDate(today.toISOString().split('T')[0]); 
-  fadeAnim.setValue(0);
-  scaleAnim.setValue(0.02);
+    setSelectedDate(today.toISOString().split('T')[0]);
+    fadeAnim.setValue(0);
+    scaleAnim.setValue(0.02);
 
-  Animated.parallel([
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 1200,
-      useNativeDriver: true,
-    }),
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      friction: 5,
-      tension: 80,
-      useNativeDriver: true,
-    }),
-  ]).start();
-}, [activeScreen]);
-const selectedExp = expedientes.filter( (exp) => exp.fechaLimite === selectedDate );
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 1200, useNativeDriver: true }),
+      Animated.spring(scaleAnim, { toValue: 1, friction: 5, tension: 80, useNativeDriver: true }),
+    ]).start();
+  }, [activeScreen]);
 
-  
-const getMarkedDates = (expedientes) => {
-  const relevanciaPorFecha = {};
-  let min = Infinity, max = -Infinity;
-  expedientes.forEach(exp => {
-    const fecha = exp.fechaLimite;
-    relevanciaPorFecha[fecha] = (relevanciaPorFecha[fecha] || 0) + exp.relevancia;
-    min = Math.min(min, relevanciaPorFecha[fecha]);
-    max = Math.max(max, relevanciaPorFecha[fecha]);
-  });
-  const interpolateColor = value => {
-    if (max === min) return '#00ff00'; 
-    const ratio = (value - min) / (max - min);
-    const red = Math.round(255 * ratio);
-    const green = Math.round(255 * (1 - ratio));
-    return `#${red.toString(16).padStart(2, '0')}${green.toString(16).padStart(2, '0')}00`;
-  };
-  const markedDates = {};
-  Object.keys(relevanciaPorFecha).forEach(fecha => {
-    markedDates[fecha] = {
-      marked: true,
-      dotColor: interpolateColor(relevanciaPorFecha[fecha]),
+  const selectedExp = expedientes.filter(exp => exp.fechaLimite === selectedDate);
+
+  const getMarkedDates = (expedientes) => {
+    const relevanciaPorFecha = {};
+    let min = Infinity, max = -Infinity;
+    expedientes.forEach(exp => {
+      const fecha = exp.fechaLimite;
+      relevanciaPorFecha[fecha] = (relevanciaPorFecha[fecha] || 0) + exp.relevancia;
+      min = Math.min(min, relevanciaPorFecha[fecha]);
+      max = Math.max(max, relevanciaPorFecha[fecha]);
+    });
+    const interpolateColor = value => {
+      if (max === min) return '#00ff00';
+      const ratio = (value - min) / (max - min);
+      const red = Math.round(255 * ratio);
+      const green = Math.round(255 * (1 - ratio));
+      return `#${red.toString(16).padStart(2, '0')}${green.toString(16).padStart(2, '0')}00`;
     };
-  });
-  return markedDates;
-};
+    const markedDates = {};
+    Object.keys(relevanciaPorFecha).forEach(fecha => {
+      markedDates[fecha] = { marked: true, dotColor: interpolateColor(relevanciaPorFecha[fecha]) };
+    });
+    return markedDates;
+  };
 
-  
+  const handlePress = (exp) => {
+    console.log('Presionaste el expediente:', exp.title);
+    setFocusedExpediente(exp);
+    setActiveScreen('main');
+  };
 
-
-
-  
-  
-const handlePress = (exp) => {
-  console.log('Presionaste el expediente:', exp.title);
-  setFocusedExpediente(exp);
-  setActiveScreen('main');
-};
-
-const calcularDiasRestantes = (fechaLimite: string | Date): number => {
-  const hoy = new Date();
-  const limite = new Date(fechaLimite);
-  const diferencia = Math.ceil((limite.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
-  return diferencia;
-};
-
-
-
-
+  const calcularDiasRestantes = (fechaLimite: string | Date): number => {
+    const hoy = new Date();
+    const limite = new Date(fechaLimite);
+    return Math.ceil((limite.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+  };
 
 
 
