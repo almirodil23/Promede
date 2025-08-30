@@ -1,9 +1,7 @@
 import React, { useEffect,Dispatch, useState } from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import HomeScreen from '.';
 import LoginScreen from '../login';
 import { AuthProvider, useAuth } from '@/context/auth';
-import AnimatedBackground from '@/components/ui/Background';
 import FinisherHeaderRN from '@/components/ui/Background';
 
 
@@ -49,12 +47,3 @@ export default function RootLayout() {
       </FinisherHeaderRN> 
   );
 }
-
-const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
-

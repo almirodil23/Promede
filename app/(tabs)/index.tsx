@@ -161,7 +161,6 @@ const [especialidades, setEspecialidades] = useState([
 
 
   
-  //const [data, setData] = React.useState(filteredExpedientes); // tu lista original
 
 
     const handleSave = (updatedItem) => {
@@ -186,14 +185,12 @@ const [especialidades, setEspecialidades] = useState([
     const relevancia = expediente?.relevancia;
     function calcHeatmapColor(value, min, max) {
   if(max === min) return '#00ff00';
-  // 0: verde (120deg), 60: amarillo, 120: rojo (0deg)
   const hue = 120 - 120 * ((value - min) / (max - min));
   return `hsl(${hue}, 100%, 45%)`;
 }
 
 
 const getMarkedDates = (expedientes) => {
-  // Agrupa relevancias por fecha
   const relevanciaPorFecha = {};
   let min = Infinity, max = -Infinity;
 
@@ -206,7 +203,6 @@ const getMarkedDates = (expedientes) => {
     max = Math.max(max, relevanciaPorFecha[fecha]);
   });
 
-  // Interpola color
   const interpolateColor = (value) => {
     if (max === min) return '#00ff00';
     const ratio = (value - min) / (max - min);
@@ -215,7 +211,6 @@ const getMarkedDates = (expedientes) => {
     return `#${red.toString(16).padStart(2, '0')}${green.toString(16).padStart(2, '0')}00`;
   };
 
-  // Construye markedDates
   const markedDates = {};
   Object.keys(relevanciaPorFecha).forEach(fecha => {
     markedDates[fecha] = {
@@ -258,7 +253,7 @@ const getMarkedDates = (expedientes) => {
 
 
   const startDate = new Date();
-  startDate.setDate(today.getDate() - 120); // numDays = 120
+  startDate.setDate(today.getDate() - 120); 
 
 const daysInRange = eachDayOfInterval({ start: startDate, end: today });
 
@@ -280,19 +275,16 @@ const values = daysInRange.map((day) => {
 const scaleAnim = useRef(new Animated.Value(0)).current;
 const heatmapValues = expedientes.map(exp => ({
   date: exp.fechaLimite,
-  count: exp.relevancia, // 1-5
-}));
+  count: exp.relevancia, 
+}))
 
-// Cargar la fuente solo una vez
- const [fontsLoaded] = useFonts({
-    Ionicons: require('../../assets/fonts/vector-icons/Ionicons.ttf'),
-  });
+
 
 
 
 
   useEffect(() => {
-  setSelectedDate(today.toISOString().split('T')[0]); // Seleccionar hoy por defecto
+  setSelectedDate(today.toISOString().split('T')[0]); 
   fadeAnim.setValue(0);
   scaleAnim.setValue(0.02);
 
@@ -314,7 +306,6 @@ const selectedExp = expedientes.filter( (exp) => exp.fechaLimite === selectedDat
 
   
 const getMarkedDates = (expedientes) => {
-  // Agrupa relevancias por fecha
   const relevanciaPorFecha = {};
   let min = Infinity, max = -Infinity;
   expedientes.forEach(exp => {
@@ -323,15 +314,13 @@ const getMarkedDates = (expedientes) => {
     min = Math.min(min, relevanciaPorFecha[fecha]);
     max = Math.max(max, relevanciaPorFecha[fecha]);
   });
-  // Crea gradiente verde→rojo
   const interpolateColor = value => {
-    if (max === min) return '#00ff00'; // todos verdes si hay un solo valor
+    if (max === min) return '#00ff00'; 
     const ratio = (value - min) / (max - min);
     const red = Math.round(255 * ratio);
     const green = Math.round(255 * (1 - ratio));
     return `#${red.toString(16).padStart(2, '0')}${green.toString(16).padStart(2, '0')}00`;
   };
-  // Arma el objeto del calendario
   const markedDates = {};
   Object.keys(relevanciaPorFecha).forEach(fecha => {
     markedDates[fecha] = {
@@ -503,6 +492,17 @@ const renderMainContent = () => (
     <View >
 <Calendar
   markingType="custom"
+  renderArrow={(direction) => (
+    <Ionicons
+      name={direction === 'left' ? 'chevron-back' : 'chevron-forward'}
+      size={20}
+      color="#00adf5"
+    />
+  )}
+  theme={{
+    arrowColor: '#00adf5',
+    todayTextColor: '#00adf5',
+  }}  
   markedDates={{
     ...getMarkedDates(expedientes),
     ...(selectedDate ? {
@@ -617,13 +617,13 @@ const renderMainContent = () => (
         paddingVertical: 10,
         paddingHorizontal: 14,
         minWidth: '100%',
-        backgroundColor: '#f8f9fa', // gris claro para suavizar fondo
+        backgroundColor: '#f8f9fa', 
         alignSelf: 'center',
         shadowColor: '#000',
         shadowOpacity: 0.05,
         shadowOffset: { width: 0, height: 1 },
         shadowRadius: 2,
-        elevation: 1, // para Android
+        elevation: 1, 
       }}
     >
       <Text
@@ -632,7 +632,7 @@ const renderMainContent = () => (
           fontWeight: '300',
           color: '#333',
           lineHeight: 20,
-          textAlign: 'center', // mejor para lectura larga
+          textAlign: 'center', 
         }}
       >
         {obs}
@@ -664,6 +664,12 @@ const renderMainContent = () => (
                 open={openEspecialidad}
                 value={especialidad}
                 items={especialidades}
+                ArrowDownIconComponent={() => (
+                    <Ionicons name="chevron-down" size={20} color="#000" />
+                  )}
+                  ArrowUpIconComponent={() => (
+                    <Ionicons name="chevron-up" size={20} color="#000" />
+                  )}
                   
                 setOpen={setOpenEspecialidad}
                   
@@ -693,6 +699,12 @@ const renderMainContent = () => (
                 items={estados}
                 setOpen={setOpen}
                 setValue={setEstado}
+                  ArrowDownIconComponent={() => (
+                    <Ionicons name="chevron-down" size={20} color="#000" />
+                  )}
+                  ArrowUpIconComponent={() => (
+                    <Ionicons name="chevron-up" size={20} color="#000" />
+                  )}
                 setItems={setEstados}
                 dropDownDirection="BOTTOM"
                 placeholder="Estado"
@@ -734,7 +746,12 @@ const renderMainContent = () => (
                 open={openEspecialidad}
                 value={especialidad}
                 items={especialidades}
-                  
+                    ArrowDownIconComponent={() => (
+    <Ionicons name="chevron-down" size={20} color="#000" />
+  )}
+  ArrowUpIconComponent={() => (
+    <Ionicons name="chevron-up" size={20} color="#000" />
+  )}
                 setOpen={setOpenEspecialidad}
                   
                 zIndex={30000}
@@ -764,7 +781,13 @@ const renderMainContent = () => (
                 items={estados}
                 setOpen={setOpen}
                 setValue={setEstado}
-                setItems={setEstados}
+                  setItems={setEstados}
+                    ArrowDownIconComponent={() => (
+    <Ionicons name="chevron-down" size={20} color="#000" />
+  )}
+  ArrowUpIconComponent={() => (
+    <Ionicons name="chevron-up" size={20} color="#000" />
+  )}
                 dropDownDirection="BOTTOM"
                 placeholder="Estado"
                 style={{ width: '30%', border: '0px solid #ccc' }}
@@ -789,10 +812,8 @@ const renderMainContent = () => (
               )}
 
 
-              {/* 
-          <Pressable style={styles.filtro} onPress={() => setActiveScreen('main')}><Text>Especialidad</Text><Text>↓</Text></Pressable>
-          <Pressable style={styles.filtro} onPress={() => setActiveScreen('main')}><Text>Estado</Text><Text>↓</Text></Pressable>
-          */}
+  
+                
             </View>
           </View>
         )}
@@ -894,13 +915,13 @@ const renderMainContent = () => (
                         paddingVertical: 10,
                         paddingHorizontal: 14,
                         minWidth: '100%',
-                        backgroundColor: '#f8f9fa', // gris claro para suavizar fondo
+                        backgroundColor: '#f8f9fa',
                         alignSelf: 'center',
                         shadowColor: '#000',
                         shadowOpacity: 0.05,
                         shadowOffset: { width: 0, height: 1 },
                         shadowRadius: 2,
-                        elevation: 1, // para Android
+                        elevation: 1, 
                       }}
                     >
                       <Text
@@ -909,7 +930,7 @@ const renderMainContent = () => (
                           fontWeight: '300',
                           color: '#333',
                           lineHeight: 20,
-                          textAlign: 'center', // mejor para lectura larga
+                          textAlign: 'center', 
                         }}
                       >
                         {obs}
@@ -959,7 +980,7 @@ const renderMainContent = () => (
       Animated.timing(animatedValue, {
         toValue: 1,
         duration: 2000,
-        useNativeDriver: false,  // <---- CAMBIO IMPORTANTE
+        useNativeDriver: false,   
       })
     ).start();
   }, []);

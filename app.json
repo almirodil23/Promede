@@ -3,6 +3,9 @@
     "name": "promede",
     "slug": "promede",
     "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "promede",

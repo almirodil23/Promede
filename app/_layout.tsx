@@ -2,8 +2,6 @@ import { Stack } from 'expo-router';
 import { AuthProvider, useAuth } from '../context/auth';
 import { useRouter, useSegments } from 'expo-router';
 import { useEffect } from 'react';
-import { View, ActivityIndicator } from 'react-native';
-import FinisherHeaderRN from '@/components/ui/Background';
 
 function ProtectedLayout() {
   const { user, animationFinished } = useAuth();
@@ -46,6 +44,7 @@ function ProtectedLayout() {
 export default function RootLayout() {
   return (
     <AuthProvider>
+      
       <ProtectedLayout />
       </AuthProvider>
   );
