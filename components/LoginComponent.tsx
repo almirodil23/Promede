@@ -38,7 +38,6 @@ export default function LoginComponent() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // Animaciones del formulario
   const formOpacity = useSharedValue(1);
   const formTranslateY = useSharedValue(0);
 
@@ -62,7 +61,6 @@ export default function LoginComponent() {
     transform: [{ translateY: formTranslateY.value }],
   }));
 
-  // Animación de respiración del logo
   useEffect(() => {
     breath.value = withRepeat(
       withSequence(
@@ -74,7 +72,6 @@ export default function LoginComponent() {
     );
   }, []);
 
-  // Medir posición inicial del logo
   useEffect(() => {
     if (logoRef.current && !layoutMeasured) {
       logoRef.current.measure((x, y, width, height, pageX, pageY) => {
@@ -87,10 +84,8 @@ export default function LoginComponent() {
   }, [layoutMeasured]);
 
 const handleBreakFinish = useCallback(() => {
-  // Usar setTimeout para esperar exactamente el tiempo total de la animación
   setAnimationFinished(true);
   console.timeEnd('aqui');
-// duración total que dura la animación de LogoBreakAnimation
 }, [setAnimationFinished]);
 
 
@@ -129,7 +124,6 @@ const handleBreakFinish = useCallback(() => {
 
     try {
       await login(email, password);
-      // Antes de iniciar animación, ponemos animationFinished a false para que el layout espere
       setAnimationFinished(false);
       console.time('aqui')
       startMoveToCenter();
@@ -218,7 +212,6 @@ const handleBreakFinish = useCallback(() => {
   );
 }
 
-// Recuerda definir tus estilos abajo (styles)
 
 const styles = StyleSheet.create({
   general: {

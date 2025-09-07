@@ -26,7 +26,7 @@ import { useFonts } from 'expo-font';
 import { eachDayOfInterval, format } from 'date-fns';
 import { LinearGradient } from 'expo-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
-import { expedientes } from '@/constants/Expedientes';
+import { expedientes as expedientesBase } from '@/constants/Expedientes';
 import Trauma from '@/assets/logos/Trauma';
 import Rehabilitacion from '@/assets/logos/Rehabilitacion';
 import Neurologia from '@/assets/logos/Neurologia';
@@ -45,6 +45,7 @@ import EstadoText from '@/components/ui/Estado';
 import EditModal from '@/components/EditModal';
 import { RFValue } from "react-native-responsive-fontsize";
 import { Picker } from '@react-native-picker/picker';
+import { getAuth } from 'firebase/auth';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -54,6 +55,8 @@ const CARD_WIDTH = (SCREEN_WIDTH - CARD_MARGIN * (NUM_COLUMNS * 2)) / NUM_COLUMN
 
 export default function HomeScreen() {
   const { width } = Dimensions.get('window');
+  const [expedientes, setExpedientes] = useState(expedientesBase);
+
 
   const [activeScreen, setActiveScreen] = useState('main');
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -63,6 +66,7 @@ export default function HomeScreen() {
   const [selectedDate, setSelectedDate] = useState('');
   const [focusedExpediente, setFocusedExpediente] = useState(null);
   const [expedientesNotas, setExpedientesNotas] = useState({});
+  const [formVisible, setFormVisible] = useState(false);
   const [modalVisible, setModalVisible] = React.useState(false);
   const [selectedItem, setSelectedItem] = React.useState(null);
   const [data, setData] = React.useState(expedientes);
@@ -71,6 +75,9 @@ export default function HomeScreen() {
   const [especialidad, setEspecialidad] = useState(null);
   const [estado, setEstado] = useState(null);
   const [open, setOpen] = useState(false);
+  const auth = getAuth();
+const user = auth.currentUser;
+const userEmail = user?.email || '';
 
   const estadosArray = [
     { label: 'Asignar', value: 'Asignar', render: () => <EstadoText estado="Asignar" long /> },
@@ -100,10 +107,45 @@ export default function HomeScreen() {
     { label: "Maxilofacial", value: "maxilofacial", icon: () => <EspecialidadIcon IconComponent={MaxiloFacial} nombre="Maxilofacial" /> },
   ]);
 
-  const handleSave = (updatedItem) => {
-    setData((prevData) => prevData.map((item) => (item.id === updatedItem.id ? updatedItem : item)));
-    setModalVisible(false);
-  };
+const handleSave = (expediente) => {
+ setExpedientes((prev) => {
+    const exists = prev.some((item) => item.id === expediente.id);
+
+    const cambios = [];
+    const original = prev.find((item) => item.id === expediente.id) || {};
+    
+    if (original.title !== expediente.title) cambios.push(`title: "${expediente.title}"`);
+    if (original.estado !== expediente.estado) cambios.push(`estado: "${expediente.estado}"`);
+    if (original.especialidad !== expediente.especialidad) cambios.push(`especialidad: "${expediente.especialidad}"`);
+    if (original.fechaLimite !== expediente.fechaLimite) cambios.push(`fechaLimite: "${expediente.fechaLimite}"`);
+    if (original.observaciones?.join(',') !== expediente.observaciones?.join(',')) cambios.push(`observaciones: "${expediente.observaciones.join(',')}"`);
+
+      const nuevaModificacion = {
+        usuario: userEmail,
+        fecha: new Date().toISOString(),
+        comentario: expediente.observaciones.join('; '),
+      };
+
+    const expedienteActualizado = {
+      ...expediente,
+      modificaciones: [...(original.modificaciones || []), nuevaModificacion],
+    };
+
+    if (exists) {
+      return prev.map((item) => (item.id === expediente.id ? expedienteActualizado : item));
+    } else {
+      return [
+        ...prev,
+        {
+          ...expedienteActualizado,
+          id: String(prev.length + 1),
+        },
+      ];
+    }
+  });
+};
+
+
 
   const filteredBySearch = expedientes.filter(exp => exp.title.toLowerCase().includes(searchText.toLowerCase()));
 
@@ -186,7 +228,6 @@ export default function HomeScreen() {
 const filteredExpedientes = React.useMemo(() => {
   return expedientes.filter(item => {
     const matchEstado = estado ? item.estado === estado : true;
-    console.log(selectedDate)
     
     console.log(matchEstado)
     const matchEspecialidad = especialidad
@@ -379,6 +420,7 @@ const renderMainContent = () => (
                           setSelectedItem(item);
                           setModalVisible(true);
                         }}>
+                          
                 <View style={styles.card}>
                 {width > 600 ? (
                 <View style={{alignSelf:'space-between',width:'100%', flexDirection:'row',alignItems:'center', justifyContent:'space-between'}}>
@@ -435,7 +477,7 @@ const renderMainContent = () => (
                   <EspecialidadIcon IconComponent={MaxiloFacial} nombre="Maxilofacial" />
                 )}
                    
-<View style={{ alignSelf: 'center', marginLeft: 10, marginTop: 10, minWidth: '60%' }}>
+<View style={{ alignSelf: 'center', marginLeft: 10, marginTop: 10, minWidth: '100%' }}>
   {item.observaciones.slice(0, 1).map((obs, index) => (
     <View
       key={index}
@@ -562,14 +604,33 @@ const renderMainContent = () => (
           <Pressable style={styles.filtro} onPress={() => setActiveScreen('main')}><Text>Especialidad</Text><Text>↓</Text></Pressable>
           <Pressable style={styles.filtro} onPress={() => setActiveScreen('main')}><Text>Estado</Text><Text>↓</Text></Pressable>
           */}
+              <Pressable onPress={() => setFormVisible(true)} style={{backgroundColor:'#00adf5', borderRadius:5, width:'8%',justifyContent:'center',alignItems:'center'}}>
+                <Ionicons name="add" size={24} color="#FFF" />
+          </Pressable>
+    
             </View>
+            {formVisible && ( 
+              <EditModal
+                visible={formVisible}
+                item={null}
+                onClose={() => setFormVisible(false)}
+                onSave={(updatedItem) => {
+                  handleSave(updatedItem);
+                  setFormVisible(false);
+                }}
+                type={"add"}
+              />
+             )}
           </View>
         ) :
           (
             <View style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', minWidth: '100%', height: '3%', zIndex: 10000, overflow: 'visible', position: 'relative' }}>
-            <Text style={[styles.title,{alignSelf:'center'}]}>Todos los expedientes</Text>
+              
+              <Text style={[styles.title, { alignSelf: 'center' }]}>Todos los expedientes</Text>
+ 
             <View style={{ flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', minWidth: '100%', maxWidth: '60%', height: '100%', zIndex: 10000, overflow: 'visible', position: 'relative' }}>
-              <DropDownPicker
+              
+                <DropDownPicker
                 open={openEspecialidad}
                 value={especialidad}
                 items={especialidades}
@@ -618,7 +679,7 @@ const renderMainContent = () => (
                 dropDownDirection="BOTTOM"
                 placeholder="Estado"
                 style={{ width: '30%', border: '0px solid #ccc' }}
-                containerStyle={{ marginHorizontal: 5, width: '50%', zIndex: 10000,flexDirection:'row-reverse' }}
+                containerStyle={{ marginHorizontal: 5, width: '30%', zIndex: 10000,flexDirection:'row-reverse' }}
                 dropDownContainerStyle={{width:'150%'}}
                 renderListItem={props => (
                   <Pressable
@@ -631,12 +692,30 @@ const renderMainContent = () => (
                     </View>
                   </Pressable>
                 )}
-              />
+                />
+              <Pressable onPress={() => setFormVisible(true)} style={{backgroundColor:'#00adf5', borderRadius:5, width:'8%',justifyContent:'right',alignItems:'center', zIndex:5,position:'absolute',right:0}}>
+                <Ionicons name="add" size={24} color="#FFF" />
+                </Pressable>
+                
               {estado && (
                 <View style={{ justifyContent: 'flex-start', alignContent: 'center' }}>
                   <EstadoText estado={estado} long />
                 </View>
-              )}
+                
+                )}
+                
+              {formVisible && ( 
+              <EditModal
+                visible={formVisible}
+                item={null}
+                onClose={() => setFormVisible(false)}
+                onSave={(updatedItem) => {
+                  handleSave(updatedItem);
+                  setFormVisible(false);
+                }}
+                type={"add"}
+              />
+             )}
 
 
   
