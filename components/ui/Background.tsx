@@ -92,13 +92,12 @@ export default function FinisherHeaderRN({ style, children, running=true }) {
   useEffect(() => {
     const interval = setInterval(() => {
       setBgColor(getBackgroundColorByHour());
-    }, 60000); // revisa cada minuto
+    }, 60000); 
 
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    // Crear partículas sólo una vez
     const newParticles = Array.from({ length: CONFIG.count }).map(() => ({
       initialX: Math.random() * SCREEN_WIDTH,
       initialY: Math.random() * 300,
@@ -115,24 +114,22 @@ export default function FinisherHeaderRN({ style, children, running=true }) {
     useEffect(() => {
     if (particles.length === 0) return;
 
-    // Detener animaciones previas si las hay
     animationRefs.current.forEach(anim => anim.stop());
     animationRefs.current = [];
 
     if (running) {
-      // Iniciar animaciones de nuevo
       particles.forEach(({ xAnim, yAnim }) => {
         const loopAnim = Animated.loop(
           Animated.parallel([
             Animated.timing(xAnim, {
               toValue: 1,
-              duration: 3000 + Math.random() * 3000,
+              duration: 20000 + Math.random() * 3000,
               easing: Easing.inOut(Easing.sin),
               useNativeDriver: true,
             }),
             Animated.timing(yAnim, {
               toValue: 1,
-              duration: 3000 + Math.random() * 3000,
+              duration: 20000 + Math.random() * 3000,
               easing: Easing.inOut(Easing.sin),
               useNativeDriver: true,
             }),

@@ -177,7 +177,6 @@ const handleBreakFinish = useCallback(() => {
         </View>
          )}
         <Animated.View style={[styles.formContainer, styles.shadowBox, animatedFormStyle,{width: width > 600 ? '50%' : '80vw'}]}>
-          <Text style={styles.title}>Promede Gestor</Text>
           <View style={styles.form}>
             <TextInput
               placeholder="Correo electrónico"

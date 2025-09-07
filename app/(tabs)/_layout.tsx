@@ -17,14 +17,13 @@ function AppContent({ setModalVisible }: AppContentProps) {
 
   useEffect(() => {
     if (user) {
-      // Simula carga inicial (puede ser para datos o animación)
       const timeout = setTimeout(() => {
         setIsAppReady(true);
-        setAnimationFinished(true); // Aseguramos que la animación esté lista
-      }, 1000); // ⏳ 600ms de retraso opcional
+        setAnimationFinished(true); 
+      }, 1000); 
       return () => clearTimeout(timeout);
     } else {
-      setIsAppReady(false); // reset
+      setIsAppReady(false); 
     }
   }, [user]);
 

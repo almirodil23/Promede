@@ -169,7 +169,7 @@ const nuevasObs = observaciones
         >
           <View style={{justifyContent:'space-around',paddingBottom:40, height:'90vh'}}
           >
-            <Text style={styles.modalTitle}>{type === 'add' ? "Crear Expediente" : "Editar Expediente"}</Text>
+            <Text style={type==='add'?styles.modalTitle:styles.modalTitle1}>{type === 'add' ? "Crear Expediente" : "Editar Expediente"}</Text>
             <View style={{justifyContent:'flex-start', alignItems:'flex-start'}}>
 <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
   {item?.title}
@@ -306,8 +306,16 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   modalTitle: {
-
+    fontSize: 24,
+    fontWeight: 'bold',
+    color:  '#00adf5',
     marginBottom: 15,
+  },
+  modalTitle1: {
+  fontSize: 24,
+  fontWeight: 'bold',
+  color:  '#cdbc25ff',
+  marginBottom: 15,
   },
   modalButtons: {
     flexDirection: 'row',
