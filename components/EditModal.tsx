@@ -53,8 +53,10 @@ function EditModal({ visible, item, onClose, onSave, type}: EditModalProps) {
   const [estado, setEstado] = React.useState(item?.estado || '');
   const [especialidad, setEspecialidad] = React.useState(item?.especialidad || '');
   const [observaciones, setObservaciones] = React.useState(
-    item?.observaciones?.join('\n') || '',
-  );
+  Array.isArray(item?.observaciones) 
+    ? item.observaciones.join('\n') 
+    : item?.observaciones || ''
+);
   const [date, setDate] = useState( new Date());
   const [fechaLimite, setFechaLimite] = React.useState(
   item?.fechaLimite ? item.fechaLimite + 'T00:00' : ''
@@ -62,7 +64,8 @@ function EditModal({ visible, item, onClose, onSave, type}: EditModalProps) {
   const [modificacionObs, setModificacionObs] = React.useState("");
   const auth = getAuth();
 const user = auth.currentUser;
-const userEmail = user?.email || '';
+  const userEmail = user?.email || '';
+  
 
 
   const opacity = React.useRef(new Animated.Value(0)).current;
@@ -139,7 +142,7 @@ const nuevasObs = observaciones
 
 
   return (
-    <Modal transparent visible={visible} animationType="fade" onRequestClose={onClose}>
+    <Modal transparent visible={visible} animationType="fade" >
       <View style={styles.wrapper}>
         
 
@@ -154,7 +157,7 @@ const nuevasObs = observaciones
           />
 
         <Animated.View
-
+           
           style={[
             styles.modalContainer,
             {
@@ -238,10 +241,10 @@ const nuevasObs = observaciones
 
             <Text>Observaciones</Text>
             <TextInput
-               value={observaciones || ''} 
+                value={observaciones}
                 onChangeText={setObservaciones}
                 multiline
-                style={[modalInputStyle, { height: 80, textAlignVertical: 'top',zIndex:3,poisition:'relative' }]}
+                style={[modalInputStyle, { height: 80, textAlignVertical: 'top',zIndex:3,position:'relative' }]}
                 placeholder="Observaciones"
 
             />
@@ -298,7 +301,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     justifyContent: 'space-between',
     padding: 20,
-    zIndex: 2,
   },
   scrollContent: {
     flexGrow: 1,
